@@ -1,0 +1,420 @@
+{
+  "departures": [
+    {
+      "tripId": "1|38929|0|86|19102026",
+      "stop": {
+        "type": "stop",
+        "id": "900040101",
+        "name": "S Halensee (Berlin)",
+        "location": {
+          "type": "location",
+          "id": "900040101",
+          "latitude": 52.496698,
+          "longitude": 13.290147
+        },
+        "products": {
+          "suburban": true,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:11000:900040101"
+        }
+      },
+      "when": "2026-10-19T22:19:00+02:00",
+      "plannedWhen": "2026-10-19T22:19:00+02:00",
+      "delay": 0,
+      "platform": null,
+      "plannedPlatform": null,
+      "prognosisType": "prognosed",
+      "direction": "U Mehringdamm",
+      "provenance": null,
+      "line": {
+        "type": "line",
+        "id": "de-vbb-11000000-bus-m19",
+        "fahrtNr": "91086",
+        "name": "M19",
+        "public": true,
+        "adminCode": "BVB---",
+        "productName": "Bus",
+        "mode": "bus",
+        "product": "bus",
+        "operator": {
+          "type": "operator",
+          "id": "berliner-verkehrsbetriebe",
+          "name": "Berliner Verkehrsbetriebe"
+        }
+      },
+      "remarks": [],
+      "origin": null,
+      "destination": {
+        "type": "stop",
+        "id": "900017171",
+        "name": "U Mehringdamm (Berlin) [Pos 7 Endstelle]",
+        "location": {
+          "type": "location",
+          "id": "900017171",
+          "latitude": 52.49277,
+          "longitude": 13.38839
+        },
+        "products": {
+          "suburban": false,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:11000:900017171"
+        }
+      },
+      "currentTripPosition": {
+        "type": "location",
+        "latitude": 52.496995,
+        "longitude": 13.290578
+      },
+      "occupancy": "low"
+    },
+    {
+      "tripId": "1|80347|0|86|19102026",
+      "stop": {
+        "type": "stop",
+        "id": "900040101",
+        "name": "S Halensee (Berlin)",
+        "location": {
+          "type": "location",
+          "id": "900040101",
+          "latitude": 52.496698,
+          "longitude": 13.290147
+        },
+        "products": {
+          "suburban": true,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:11000:900040101"
+        }
+      },
+      "when": "2026-10-19T22:19:00+02:00",
+      "plannedWhen": "2026-10-19T22:19:00+02:00",
+      "delay": null,
+      "platform": "2",
+      "plannedPlatform": "2",
+      "prognosisType": "prognosed",
+      "direction": "Ringbahn S42 ⟲",
+      "provenance": null,
+      "line": {
+        "type": "line",
+        "id": "de-vbb-11000000-s-bahn-s42-s42-r",
+        "fahrtNr": "1067",
+        "name": "S42",
+        "public": true,
+        "adminCode": "DBS---",
+        "productName": "S",
+        "mode": "train",
+        "product": "suburban",
+        "operator": {
+          "type": "operator",
+          "id": "s-bahn-berlin-gmbh",
+          "name": "S-Bahn Berlin GmbH"
+        }
+      },
+      "remarks": [
+        {
+          "type": "hint",
+          "code": "FK",
+          "text": "Bicycle conveyance"
+        }
+      ],
+      "origin": null,
+      "destination": {
+        "type": "stop",
+        "id": "900020202",
+        "name": "S Beusselstr. (Berlin)",
+        "location": {
+          "type": "location",
+          "id": "900020202",
+          "latitude": 52.534318,
+          "longitude": 13.328702
+        },
+        "products": {
+          "suburban": true,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:11000:900020202"
+        }
+      },
+      "currentTripPosition": {
+        "type": "location",
+        "latitude": 52.496042,
+        "longitude": 13.290596
+      }
+    },
+    {
+      "tripId": "1|1700|1|86|19102026",
+      "stop": {
+        "type": "stop",
+        "id": "900040101",
+        "name": "S Halensee (Berlin)",
+        "location": {
+          "type": "location",
+          "id": "900040101",
+          "latitude": 52.496698,
+          "longitude": 13.290147
+        },
+        "products": {
+          "suburban": true,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:11000:900040101"
+        }
+      },
+      "when": "2026-10-19T22:21:00+02:00",
+      "plannedWhen": "2026-10-19T22:21:00+02:00",
+      "delay": 0,
+      "platform": "2",
+      "plannedPlatform": "2",
+      "prognosisType": "prognosed",
+      "direction": "S Königs Wusterhausen Bhf",
+      "provenance": null,
+      "line": {
+        "type": "line",
+        "id": "de-vbb-11000000-s-bahn-s46-s46-d",
+        "fahrtNr": "20658",
+        "name": "S46",
+        "public": true,
+        "adminCode": "DBS---",
+        "productName": "S",
+        "mode": "train",
+        "product": "suburban",
+        "operator": {
+          "type": "operator",
+          "id": "s-bahn-berlin-gmbh",
+          "name": "S-Bahn Berlin GmbH"
+        }
+      },
+      "remarks": [
+        {
+          "type": "hint",
+          "code": "FK",
+          "text": "Bicycle conveyance"
+        }
+      ],
+      "origin": null,
+      "destination": {
+        "type": "stop",
+        "id": "900260001",
+        "name": "S Königs Wusterhausen Bhf",
+        "location": {
+          "type": "location",
+          "id": "900260001",
+          "latitude": 52.296967,
+          "longitude": 13.631305
+        },
+        "products": {
+          "suburban": true,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": true
+        },
+        "ids": {
+          "ifopt": "de:12061:900260001"
+        }
+      },
+      "currentTripPosition": {
+        "type": "location",
+        "latitude": 52.501112,
+        "longitude": 13.283513
+      }
+    },
+    {
+      "tripId": "1|45824|1|86|19102026",
+      "stop": {
+        "type": "stop",
+        "id": "900040101",
+        "name": "S Halensee (Berlin)",
+        "location": {
+          "type": "location",
+          "id": "900040101",
+          "latitude": 52.496698,
+          "longitude": 13.290147
+        },
+        "products": {
+          "suburban": true,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:11000:900040101"
+        }
+      },
+      "when": "2026-10-19T22:21:00+02:00",
+      "plannedWhen": "2026-10-19T22:21:00+02:00",
+      "delay": 0,
+      "platform": null,
+      "plannedPlatform": null,
+      "prognosisType": "prognosed",
+      "direction": "Teltow, Rammrath-Brücke",
+      "provenance": null,
+      "line": {
+        "type": "line",
+        "id": "de-vbb-11000000-bus-x10",
+        "fahrtNr": "109282",
+        "name": "X10",
+        "public": true,
+        "adminCode": "BVB---",
+        "productName": "Bus",
+        "mode": "bus",
+        "product": "bus",
+        "operator": {
+          "type": "operator",
+          "id": "berliner-verkehrsbetriebe",
+          "name": "Berliner Verkehrsbetriebe"
+        }
+      },
+      "remarks": [],
+      "origin": null,
+      "destination": {
+        "type": "stop",
+        "id": "900220079",
+        "name": "Teltow, Rammrath-Brücke",
+        "location": {
+          "type": "location",
+          "id": "900220079",
+          "latitude": 52.400118,
+          "longitude": 13.240598
+        },
+        "products": {
+          "suburban": false,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:12069:900220079"
+        }
+      },
+      "currentTripPosition": {
+        "type": "location",
+        "latitude": 52.499269,
+        "longitude": 13.302687
+      },
+      "occupancy": "medium"
+    },
+    {
+      "tripId": "1|40063|0|86|19102026",
+      "stop": {
+        "type": "stop",
+        "id": "900040101",
+        "name": "S Halensee (Berlin)",
+        "location": {
+          "type": "location",
+          "id": "900040101",
+          "latitude": 52.496698,
+          "longitude": 13.290147
+        },
+        "products": {
+          "suburban": true,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:11000:900040101"
+        }
+      },
+      "when": "2026-10-19T22:23:00+02:00",
+      "plannedWhen": "2026-10-19T22:22:00+02:00",
+      "delay": 60,
+      "platform": null,
+      "plannedPlatform": null,
+      "prognosisType": "prognosed",
+      "direction": "Grunewald, Roseneck",
+      "provenance": null,
+      "line": {
+        "type": "line",
+        "id": "de-vbb-11000000-bus-m29",
+        "fahrtNr": "93864",
+        "name": "M29",
+        "public": true,
+        "adminCode": "BVB---",
+        "productName": "Bus",
+        "mode": "bus",
+        "product": "bus",
+        "operator": {
+          "type": "operator",
+          "id": "berliner-verkehrsbetriebe",
+          "name": "Berliner Verkehrsbetriebe"
+        }
+      },
+      "remarks": [],
+      "origin": null,
+      "destination": {
+        "type": "stop",
+        "id": "900048109",
+        "name": "Roseneck (Berlin)",
+        "location": {
+          "type": "location",
+          "id": "900048109",
+          "latitude": 52.476436,
+          "longitude": 13.281535
+        },
+        "products": {
+          "suburban": false,
+          "subway": false,
+          "tram": false,
+          "bus": true,
+          "ferry": false,
+          "express": false,
+          "regional": false
+        },
+        "ids": {
+          "ifopt": "de:11000:900048109"
+        }
+      },
+      "currentTripPosition": {
+        "type": "location",
+        "latitude": 52.499206,
+        "longitude": 13.302327
+      },
+      "occupancy": "medium"
+    }
+  ],
+  "realtimeDataUpdatedAt": 1792441116
+}

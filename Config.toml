@@ -1,0 +1,5 @@
+# BVG stops to display, by their BVG stop id.
+bvg_stops = ["900040101"]
+
+# Number of departures to be fetched each call
+num_results = 10 
