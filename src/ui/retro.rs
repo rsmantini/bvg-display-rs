@@ -86,9 +86,10 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
             } else {
                 format!("{} min", d.when)
             };
-            yellow_text(txt).align_x(iced::Alignment::End)
+            yellow_text(txt).size(font_size)
         })
-        .width(col_departure),
+        .width(col_departure)
+        .align_x(iced::Alignment::End),
     ];
 
     let table: Element<'_, Message> = Container::new(
