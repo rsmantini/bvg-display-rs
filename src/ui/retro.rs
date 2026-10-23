@@ -3,7 +3,7 @@ use iced::{
     widget::{Container, column, container, image, row, space, table, text},
 };
 
-use crate::{MATRIX_FONT, Message, State, state::DisplayDeparture};
+use crate::{Message, State, state::DisplayDeparture};
 
 pub fn retro_view(state: &State) -> Element<'_, Message> {
     let black = Color::BLACK;
@@ -60,7 +60,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     .width(Length::Fill);
 
     let yellow = Color::from_rgb(1.0, 0.67, 0.02);
-    let yellow_text = |txt: String| text(txt).font(Font::with_name(MATRIX_FONT)).color(yellow);
+    let yellow_text = |txt: String| text(txt).font(state.retro_font).color(yellow);
 
     // Box 2: black background, yellow text — the departure table (no header).
     let columns: [iced::widget::table::Column<'_, '_, &DisplayDeparture, Message>; 3] = [

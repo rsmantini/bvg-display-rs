@@ -1,11 +1,13 @@
 //! Application configuration loaded from `Config.toml`.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Default, Clone, serde::Deserialize)]
 pub struct Config {
     pub bvg_stops: Vec<String>,
     pub num_results: u32,
+    pub assets_dir: PathBuf,
+    pub retro_ui: RetroUi,
 }
 
 impl Config {
@@ -16,6 +18,11 @@ impl Config {
             .map_err(|e| format!("failed to parse config file '{}': {e}", path.display()))?;
         Ok(config)
     }
+}
+
+#[derive(Debug, Default, Clone, serde::Deserialize)]
+pub struct RetroUi {
+    pub font: String,
 }
 
 #[cfg(test)]

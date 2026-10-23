@@ -1,26 +1,30 @@
 use std::sync::Arc;
 
 use chrono::{DateTime, Local};
-use iced::widget::image;
+use iced::{Font, widget::image};
 use rapidhash::RapidHashMap;
 use reqwest::Client;
 
 use crate::{api::departures::Departure, config::Config};
 
+#[derive(Clone)]
 pub struct State {
     pub config: Arc<Config>,
     pub http_client: Client,
     pub departures: Departures,
     pub bvg_logo: image::Handle,
+    pub retro_font: Font,
 }
 
 impl State {
     pub fn new(config: Config, bvg_logo: Vec<u8>) -> Self {
+        let font_name: &'static str = Box::leak(Box::new(config.retro_ui.font.clone()));
         State {
             config: Arc::new(config),
             http_client: Client::new(),
             departures: Departures::default(),
             bvg_logo: image::Handle::from_bytes(bvg_logo),
+            retro_font: Font::with_name(font_name),
         }
     }
 }

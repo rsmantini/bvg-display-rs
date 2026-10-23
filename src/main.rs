@@ -6,6 +6,7 @@ pub mod ui;
 
 use std::{borrow::Cow, error::Error};
 
+use clap::Parser;
 use iced::{Settings, Task};
 
 use crate::{
@@ -14,26 +15,60 @@ use crate::{
     ui::retro::retro_view,
 };
 
-const MATRIX_FONT: &str = "Advanced Dot Digital-7";
+#[derive(Parser)]
+struct Cli {
+    /// Path to the config file
+    #[arg(long, default_value = "Config.toml")]
+    config: std::path::PathBuf,
+}
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let matrix_font =
-        std::fs::read("assets/fonts/advanced-dot-digital-7/advanced_dot_digital-7.ttf")?;
+    let cli = Cli::parse();
 
-    let settings = Settings {
-        fonts: vec![Cow::Owned(matrix_font)],
-        ..Settings::default()
-    };
+    let (settings, state) = init(&cli)?;
 
-    iced::application(new, update, retro_view)
+    iced::application(move || new(state.clone()), update, retro_view)
         .settings(settings)
         .run()
         .map_err(Into::into)
 }
 
-fn new() -> (State, Task<Message>) {
-    let config = config::Config::load(std::path::Path::new("Config.toml")).unwrap();
-    let bvg_logo = std::fs::read("assets/images/bvg-logo.svg.png").unwrap();
-    let state = State::new(config, bvg_logo);
+fn new(state: State) -> (State, Task<Message>) {
     (state, Task::done(Message::FetchDepartures))
+}
+
+fn init(cli: &Cli) -> Result<(Settings, State), Box<dyn Error>> {
+    let config = config::Config::load(&cli.config).map_err(|e| -> Box<dyn Error> { e })?;
+
+    let fonts = load_fonts(&config.assets_dir.join("fonts"))?;
+    let bvg_logo = std::fs::read(config.assets_dir.join("images/bvg-logo.svg.png"))?;
+
+    let settings = Settings {
+        fonts,
+        ..Settings::default()
+    };
+
+    Ok((settings, State::new(config, bvg_logo)))
+}
+
+/// Recursively load every `.ttf` font found under `dir`.
+fn load_fonts(dir: &std::path::Path) -> Result<Vec<Cow<'static, [u8]>>, Box<dyn Error>> {
+    let mut fonts: Vec<Cow<'static, [u8]>> = Vec::new();
+    let mut stack = vec![dir.to_path_buf()];
+    while let Some(path) = stack.pop() {
+        if !path.is_dir() {
+            continue;
+        }
+        for entry in std::fs::read_dir(&path)? {
+            let entry = entry?;
+            let p = entry.path();
+            if p.is_dir() {
+                stack.push(p);
+            } else if p.extension().is_some_and(|e| e == "ttf") {
+                println!("reading font file {:?}", p);
+                fonts.push(Cow::Owned(std::fs::read(p)?));
+            }
+        }
+    }
+    Ok(fonts)
 }
