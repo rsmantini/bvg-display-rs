@@ -27,6 +27,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     // table's cell padding so the header lines up with the columns.
     let header_style = |_: &iced::Theme| container::background(Color::WHITE);
 
+    let font_size = state.config.retro_ui.font_size;
     let bold_black_text = |txt: String| {
         text(txt)
             .font(Font {
@@ -34,6 +35,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
                 ..Font::DEFAULT
             })
             .color(black)
+            .size(font_size)
     };
 
     let header = row![
@@ -60,7 +62,12 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     .width(Length::Fill);
 
     let yellow = Color::from_rgb(1.0, 0.67, 0.02);
-    let yellow_text = |txt: String| text(txt).font(state.retro_font).color(yellow);
+    let yellow_text = |txt: String| {
+        text(txt)
+            .font(state.retro_font)
+            .color(yellow)
+            .size(font_size)
+    };
 
     // Box 2: black background, yellow text — the departure table (no header).
     let columns: [iced::widget::table::Column<'_, '_, &DisplayDeparture, Message>; 3] = [

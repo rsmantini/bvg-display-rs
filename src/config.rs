@@ -24,6 +24,7 @@ impl Config {
 #[derive(Debug, Default, Clone, serde::Deserialize)]
 pub struct RetroUi {
     pub font: String,
+    pub font_size: u32,
 }
 
 #[cfg(test)]

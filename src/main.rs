@@ -18,7 +18,7 @@ use crate::{
 #[derive(Parser)]
 struct Cli {
     /// Path to the config file
-    #[arg(long, default_value = "Config.toml")]
+    #[arg(long, default_value = "Config.local.toml")]
     config: std::path::PathBuf,
 }
 
