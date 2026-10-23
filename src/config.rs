@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 pub struct Config {
     pub bvg_stops: Vec<String>,
     pub max_api_results: u32,
+    pub max_departure_time_minutes: u32,
     pub assets_dir: PathBuf,
     pub fullscreen: bool,
     pub retro_ui: RetroUi,

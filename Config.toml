@@ -4,6 +4,9 @@ bvg_stops = ["900040101"]
 # Number of departures to be fetched each call
 max_api_results = 10
 
+# Show departures for how many minutes? 
+max_departure_time_minutes = 30
+
 # Directory containing the app's assets (fonts/, images/).
 assets_dir = "assets"
 

@@ -62,10 +62,14 @@ async fn fetch_departures(
     let mut last_update = None;
 
     for stop_id in &config.bvg_stops {
-        let response =
-            crate::api::client::get_departures(&http_client, stop_id, config.max_api_results)
-                .await
-                .map_err(|e| Box::new(e) as Box<dyn Error + Send>)?;
+        let response = crate::api::client::get_departures(
+            &http_client,
+            stop_id,
+            config.max_api_results,
+            config.max_departure_time_minutes,
+        )
+        .await
+        .map_err(|e| Box::new(e) as Box<dyn Error + Send>)?;
 
         let Some(stop_name) = response.departures.first().map(|d| d.stop.name.clone()) else {
             continue;
