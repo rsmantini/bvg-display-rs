@@ -2,7 +2,7 @@
 bvg_stops = ["900040101"]
 
 # Number of departures to be fetched each call
-num_results = 10
+max_api_results = 10
 
 # Directory containing the app's assets (fonts/, images/).
 assets_dir = "assets"
@@ -13,3 +13,5 @@ fullscreen = true
 [retro_ui]
 # Name of the font (loaded from assets_dir/fonts) used to render departures.
 font = "Advanced Dot Digital-7" 
+font_size = 20
+max_display_rows = 10

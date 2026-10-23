@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 #[derive(Debug, Default, Clone, serde::Deserialize)]
 pub struct Config {
     pub bvg_stops: Vec<String>,
-    pub num_results: u32,
+    pub max_api_results: u32,
     pub assets_dir: PathBuf,
     pub fullscreen: bool,
     pub retro_ui: RetroUi,
@@ -25,6 +25,7 @@ impl Config {
 pub struct RetroUi {
     pub font: String,
     pub font_size: u32,
+    pub max_display_rows: usize,
 }
 
 #[cfg(test)]

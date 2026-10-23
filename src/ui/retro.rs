@@ -91,13 +91,20 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
         .width(col_departure),
     ];
 
-    let table: Element<'_, Message> =
-        Container::new(table(columns, rows.iter().copied()).separator(Pixels::ZERO))
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .padding(5)
-            .style(move |_| container::background(black))
-            .into();
+    let table: Element<'_, Message> = Container::new(
+        table(
+            columns,
+            rows.iter()
+                .copied()
+                .take(state.config.retro_ui.max_display_rows),
+        )
+        .separator(Pixels::ZERO),
+    )
+    .width(Length::Fill)
+    .height(Length::Fill)
+    .padding(5)
+    .style(move |_| container::background(black))
+    .into();
 
     // Box 3: white background, black text — stop name (left), last update (right).
     let stop_name = state

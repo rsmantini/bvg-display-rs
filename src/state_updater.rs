@@ -60,7 +60,7 @@ async fn fetch_departures(
 
     for stop_id in &config.bvg_stops {
         let response =
-            crate::api::client::get_departures(&http_client, stop_id, config.num_results)
+            crate::api::client::get_departures(&http_client, stop_id, config.max_api_results)
                 .await
                 .map_err(|e| Box::new(e) as Box<dyn Error + Send>)?;
 
