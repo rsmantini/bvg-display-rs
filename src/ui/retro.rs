@@ -79,7 +79,11 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
         })
         .width(col_destination),
         table::column(text(""), |d: &DisplayDeparture| {
+            let mut font_size = font_size;
             let txt = if d.cancelled {
+                if state.config.retro_ui.reduce_canceled_text {
+                    font_size /= 2;
+                }
                 format!("{} fällt aus", d.vehicle_type)
             } else if d.arriving {
                 "jetzt".to_string()

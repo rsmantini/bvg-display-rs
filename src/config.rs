@@ -26,6 +26,7 @@ pub struct RetroUi {
     pub font: String,
     pub font_size: u32,
     pub max_display_rows: usize,
+    pub reduce_canceled_text: bool,
 }
 
 #[cfg(test)]
