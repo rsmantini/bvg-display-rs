@@ -121,7 +121,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
         .map(|t| format!("{}", t.format("%H:%M:%S")))
         .unwrap_or_default();
 
-    let logo = image::viewer(state.bvg_logo.clone()).height(Length::Fixed(51.0));
+    let logo = image::viewer(state.bvg_logo.clone()).height(Length::Fill);
 
     let footer: Element<'_, Message> = Container::new(
         row![
@@ -133,6 +133,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
         .spacing(10),
     )
     .width(Length::Fill)
+    .height(Length::Shrink)
     .style(|_| container::background(Color::WHITE))
     .into();
 
