@@ -1,7 +1,7 @@
 use std::{error::Error, sync::Arc, time::Duration};
 
 use chrono::{Local, TimeZone};
-use iced::Task;
+use iced::{Subscription, Task, exit, keyboard};
 use rapidhash::{HashMapExt, RapidHashMap};
 use reqwest::Client;
 use tokio::time::sleep;
@@ -15,6 +15,7 @@ use crate::{
 pub enum Message {
     FetchDepartures,
     DeparturesFetched(Departures),
+    Quit,
 }
 
 pub fn update(state: &mut State, message: Message) -> Task<Message> {
@@ -33,7 +34,21 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
             state.departures = departures;
             Task::perform(sleep(Duration::from_secs(10)), |_| Message::FetchDepartures)
         }
+        Message::Quit => exit(),
     }
+}
+
+pub fn escape_subscription(_state: &State) -> Subscription<Message> {
+    keyboard::listen().filter_map(|event| {
+        matches!(
+            event,
+            keyboard::Event::KeyPressed {
+                key: keyboard::Key::Named(keyboard::key::Named::Escape),
+                ..
+            }
+        )
+        .then_some(Message::Quit)
+    })
 }
 
 async fn fetch_departures(

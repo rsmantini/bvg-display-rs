@@ -11,7 +11,7 @@ use iced::{Settings, Task};
 
 use crate::{
     state::State,
-    state_updater::{Message, update},
+    state_updater::{Message, escape_subscription, update},
     ui::retro::retro_view,
 };
 
@@ -28,6 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (settings, state) = init(&cli)?;
 
     iced::application(move || new(state.clone()), update, retro_view)
+        .subscription(escape_subscription)
         .settings(settings)
         .run()
         .map_err(Into::into)
