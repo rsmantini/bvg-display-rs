@@ -47,7 +47,7 @@ pub struct DisplayDeparture {
     pub direction: String,
     pub when: String,
     pub cancelled: bool,
-    pub typ: String,
+    pub vehicle_type: String,
     pub arriving: bool,
 }
 
@@ -62,7 +62,7 @@ impl From<Departure> for DisplayDeparture {
             direction: departure.direction.replace(" (Berlin)", ""),
             when: delta.num_minutes().to_string(),
             cancelled: departure.cancelled,
-            typ: departure.line.mode.as_german_str().to_string(),
+            vehicle_type: departure.line.mode.as_german_str().to_string(),
             arriving: delta.num_minutes() <= 0,
         }
     }
@@ -73,7 +73,7 @@ impl Display for DisplayDeparture {
         write!(
             f,
             "line: {}, direction: {}, when: {}, cancelled: {}, typ: {}, arriving: {}",
-            self.line, self.direction, self.when, self.cancelled, self.typ, self.arriving
+            self.line, self.direction, self.when, self.cancelled, self.vehicle_type, self.arriving
         )
     }
 }

@@ -80,7 +80,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
         .width(col_destination),
         table::column(text(""), |d: &DisplayDeparture| {
             let txt = if d.cancelled {
-                format!("{} fällt aus", d.typ)
+                format!("{} fällt aus", d.vehicle_type)
             } else if d.arriving {
                 "jetzt".to_string()
             } else {
