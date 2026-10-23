@@ -59,7 +59,7 @@ impl From<Departure> for DisplayDeparture {
 
         DisplayDeparture {
             line: departure.line.name,
-            direction: departure.direction,
+            direction: departure.direction.replace(" (Berlin)", ""),
             when: delta.num_minutes().to_string(),
             cancelled: departure.cancelled,
             typ: departure.line.mode.as_german_str().to_string(),
