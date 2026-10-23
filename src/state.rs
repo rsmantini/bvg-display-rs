@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Display, sync::Arc};
 
 use chrono::{DateTime, Local};
 use iced::{Font, widget::image};
@@ -65,5 +65,15 @@ impl From<Departure> for DisplayDeparture {
             typ: departure.line.mode.as_german_str().to_string(),
             arriving: delta.num_minutes() <= 0,
         }
+    }
+}
+
+impl Display for DisplayDeparture {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "line: {}, direction: {}, when: {}, cancelled: {}, typ: {}, arriving: {}",
+            self.line, self.direction, self.when, self.cancelled, self.typ, self.arriving
+        )
     }
 }

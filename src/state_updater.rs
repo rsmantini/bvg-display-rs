@@ -68,14 +68,21 @@ async fn fetch_departures(
             continue;
         };
 
-        let entry = departures.entry(stop_name.clone()).or_insert_with(Vec::new);
-        for departure in response.departures {
-            let display_departure = DisplayDeparture::from(departure);
-            entry.push(display_departure);
-        }
         last_update = Local
             .timestamp_opt(response.realtime_data_updated_at, 0)
             .single();
+
+        println!(
+            "fetched departures for stop: {}; last updated: {:?}",
+            stop_name, last_update
+        );
+
+        let entry = departures.entry(stop_name.clone()).or_insert_with(Vec::new);
+        for departure in response.departures {
+            let display_departure = DisplayDeparture::from(departure);
+            println!("  {}", display_departure);
+            entry.push(display_departure);
+        }
     }
 
     Ok(Departures {

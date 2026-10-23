@@ -7,7 +7,7 @@ pub mod ui;
 use std::{borrow::Cow, error::Error};
 
 use clap::Parser;
-use iced::{Settings, Task};
+use iced::{Settings, Task, window::Settings as WindowSettings};
 
 use crate::{
     state::State,
@@ -26,8 +26,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
     let (settings, state) = init(&cli)?;
+    let fullscreen = state.config.fullscreen;
 
     iced::application(move || new(state.clone()), update, retro_view)
+        .window(iced::window::Settings {
+            fullscreen,
+            ..WindowSettings::default()
+        })
         .subscription(escape_subscription)
         .settings(settings)
         .run()

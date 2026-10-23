@@ -7,6 +7,7 @@ pub struct Config {
     pub bvg_stops: Vec<String>,
     pub num_results: u32,
     pub assets_dir: PathBuf,
+    pub fullscreen: bool,
     pub retro_ui: RetroUi,
 }
 

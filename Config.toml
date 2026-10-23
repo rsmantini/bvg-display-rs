@@ -7,6 +7,9 @@ num_results = 10
 # Directory containing the app's assets (fonts/, images/).
 assets_dir = "assets"
 
+# Whether the app should start in fullscreen mode.
+fullscreen = true 
+
 [retro_ui]
 # Name of the font (loaded from assets_dir/fonts) used to render departures.
 font = "Advanced Dot Digital-7" 
