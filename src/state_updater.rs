@@ -11,6 +11,9 @@ use crate::{
     state::{Departures, DisplayDeparture, State},
 };
 
+// 10 minutes
+const RETENTION_TIME: i64 = 900;
+
 #[derive(Debug, Clone)]
 pub enum Message {
     FetchDepartures,
@@ -31,7 +34,7 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
             },
         ),
         Message::DeparturesFetched(departures) => {
-            state.departures = departures;
+            update_departures(state, departures);
             Task::perform(sleep(Duration::from_secs(10)), |_| Message::FetchDepartures)
         }
         Message::Quit => exit(),
@@ -89,4 +92,30 @@ async fn fetch_departures(
         departures,
         last_update,
     })
+}
+
+fn update_departures(state: &mut State, mut departures: Departures) {
+    // Arriving trips sometimes linger for minutes in the API response
+    // show them only once if this config is set
+    if state.config.show_arriving_trips_only_once {
+        for departures in departures.departures.values_mut() {
+            departures.retain(|d| !state.displayed_arriving_trips.contains_key(&d.trip_id));
+        }
+
+        let now = chrono::Utc::now().timestamp();
+        state.displayed_arriving_trips.extend(
+            departures
+                .departures
+                .values()
+                .flatten()
+                .filter(|d| d.arriving)
+                .map(|d| (d.trip_id.clone(), now)),
+        );
+
+        state
+            .displayed_arriving_trips
+            .retain(|_, created| *created > now - RETENTION_TIME);
+    }
+
+    state.departures = departures;
 }

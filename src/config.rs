@@ -9,6 +9,8 @@ pub struct Config {
     pub assets_dir: PathBuf,
     pub fullscreen: bool,
     pub retro_ui: RetroUi,
+    #[serde(default)]
+    pub show_arriving_trips_only_once: bool,
 }
 
 impl Config {

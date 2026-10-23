@@ -14,6 +14,7 @@ pub struct State {
     pub departures: Departures,
     pub bvg_logo: image::Handle,
     pub retro_font: Font,
+    pub displayed_arriving_trips: RapidHashMap<String, i64>,
 }
 
 impl State {
@@ -25,6 +26,7 @@ impl State {
             departures: Departures::default(),
             bvg_logo: image::Handle::from_bytes(bvg_logo),
             retro_font: Font::with_name(font_name),
+            displayed_arriving_trips: RapidHashMap::default(),
         }
     }
 }
@@ -49,6 +51,7 @@ pub struct DisplayDeparture {
     pub cancelled: bool,
     pub vehicle_type: String,
     pub arriving: bool,
+    pub trip_id: String,
 }
 
 impl From<Departure> for DisplayDeparture {
@@ -64,6 +67,7 @@ impl From<Departure> for DisplayDeparture {
             cancelled: departure.cancelled,
             vehicle_type: departure.line.mode.as_german_str().to_string(),
             arriving: delta.num_minutes() <= 0,
+            trip_id: departure.trip_id,
         }
     }
 }
@@ -72,8 +76,14 @@ impl Display for DisplayDeparture {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "line: {}, direction: {}, when: {}, cancelled: {}, typ: {}, arriving: {}",
-            self.line, self.direction, self.when, self.cancelled, self.vehicle_type, self.arriving
+            "line: {}, direction: {}, when: {}, cancelled: {}, typ: {}, arriving: {}, trip_id: {}",
+            self.line,
+            self.direction,
+            self.when,
+            self.cancelled,
+            self.vehicle_type,
+            self.arriving,
+            self.trip_id,
         )
     }
 }
