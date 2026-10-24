@@ -12,7 +12,7 @@ use iced::{Settings, Task, window::Settings as WindowSettings};
 use crate::{
     state::State,
     state_updater::{Message, escape_subscription, update},
-    ui::retro::retro_view,
+    ui::retro::{blink_tick_subscription, retro_view},
 };
 
 #[derive(Parser)]
@@ -34,6 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             ..WindowSettings::default()
         })
         .subscription(escape_subscription)
+        .subscription(blink_tick_subscription)
         .settings(settings)
         .run()
         .map_err(Into::into)

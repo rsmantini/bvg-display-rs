@@ -5,7 +5,10 @@ use iced::{Font, widget::image};
 use rapidhash::RapidHashMap;
 use reqwest::Client;
 
-use crate::{api::departures::Departure, config::Config};
+use crate::{
+    api::departures::Departure,
+    config::{Config, RetroUiConfig},
+};
 
 #[derive(Clone)]
 pub struct State {
@@ -13,20 +16,20 @@ pub struct State {
     pub http_client: Client,
     pub departures: Departures,
     pub bvg_logo: image::Handle,
-    pub retro_font: Font,
     pub displayed_arriving_trips: RapidHashMap<String, i64>,
+    pub retro_ui: RetroUiState,
 }
 
 impl State {
     pub fn new(config: Config, bvg_logo: Vec<u8>) -> Self {
-        let font_name: &'static str = Box::leak(Box::new(config.retro_ui.font.clone()));
+        let retro_ui = RetroUiState::new(&config.retro_ui);
         State {
             config: Arc::new(config),
             http_client: Client::new(),
             departures: Departures::default(),
             bvg_logo: image::Handle::from_bytes(bvg_logo),
-            retro_font: Font::with_name(font_name),
             displayed_arriving_trips: RapidHashMap::default(),
+            retro_ui,
         }
     }
 }
@@ -85,5 +88,22 @@ impl Display for DisplayDeparture {
             self.arriving,
             self.trip_id,
         )
+    }
+}
+
+#[derive(Clone)]
+pub struct RetroUiState {
+    pub blink_tick: u64,
+    pub font: Font,
+}
+
+impl RetroUiState {
+    pub fn new(config: &RetroUiConfig) -> Self {
+        let font_name: &'static str = Box::leak(Box::new(config.font.clone()));
+        let font = Font::with_name(font_name);
+        Self {
+            blink_tick: 0,
+            font,
+        }
     }
 }

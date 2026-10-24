@@ -9,7 +9,7 @@ pub struct Config {
     pub max_departure_time_minutes: u32,
     pub assets_dir: PathBuf,
     pub fullscreen: bool,
-    pub retro_ui: RetroUi,
+    pub retro_ui: RetroUiConfig,
     #[serde(default)]
     pub show_arriving_trips_only_once: bool,
 }
@@ -25,11 +25,12 @@ impl Config {
 }
 
 #[derive(Debug, Default, Clone, serde::Deserialize)]
-pub struct RetroUi {
+pub struct RetroUiConfig {
     pub font: String,
     pub font_size: u32,
     pub max_display_rows: usize,
     pub reduce_canceled_text: bool,
+    pub blink_speed_millis: u64,
 }
 
 #[cfg(test)]

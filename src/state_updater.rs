@@ -19,6 +19,7 @@ pub enum Message {
     FetchDepartures,
     DeparturesFetched(Departures),
     Quit,
+    RetroUiBlinkTick,
 }
 
 pub fn update(state: &mut State, message: Message) -> Task<Message> {
@@ -38,6 +39,10 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
             Task::perform(sleep(Duration::from_secs(10)), |_| Message::FetchDepartures)
         }
         Message::Quit => exit(),
+        Message::RetroUiBlinkTick => {
+            state.retro_ui.blink_tick += 1;
+            Task::none()
+        }
     }
 }
 

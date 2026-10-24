@@ -22,3 +22,4 @@ font_size = 20
 max_display_rows = 10
 # Reduce the font of the canceled trip message
 reduce_canceled_text = false
+blink_speed_millis = 700

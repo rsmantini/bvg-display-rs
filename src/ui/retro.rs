@@ -1,5 +1,7 @@
+use std::time::Duration;
+
 use iced::{
-    Color, Element, Font, Length, Pixels, font,
+    Color, Element, Font, Length, Pixels, Subscription, font, time,
     widget::{Container, column, container, image, row, space, table, text},
 };
 
@@ -62,20 +64,24 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     .width(Length::Fill);
 
     let yellow = Color::from_rgb(1.0, 0.67, 0.02);
-    let yellow_text = |txt: String| {
-        text(txt)
-            .font(state.retro_font)
-            .color(yellow)
-            .size(font_size)
+    let blink_tick = state.retro_ui.blink_tick;
+
+    let departures_text = |txt: String, arriving, font_size| {
+        let txt = text(txt).font(state.retro_ui.font).size(font_size);
+        if arriving && blink_tick.is_multiple_of(2) {
+            txt.color(black)
+        } else {
+            txt.color(yellow)
+        }
     };
 
     // Box 2: black background, yellow text — the departure table (no header).
     let columns: [iced::widget::table::Column<'_, '_, &DisplayDeparture, Message>; 3] = [
         table::column(text(""), |d: &DisplayDeparture| {
-            yellow_text(d.line.clone()).width(col_line)
+            departures_text(d.line.clone(), d.arriving, font_size).width(col_line)
         }),
         table::column(text(""), |d: &DisplayDeparture| {
-            yellow_text(d.direction.clone())
+            departures_text(d.direction.clone(), d.arriving, font_size)
         })
         .width(col_destination),
         table::column(text(""), |d: &DisplayDeparture| {
@@ -86,11 +92,11 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
                 }
                 format!("{} fällt aus", d.vehicle_type)
             } else if d.arriving {
-                "jetzt".to_string()
+                "".to_string()
             } else {
                 format!("{} min", d.when)
             };
-            yellow_text(txt).size(font_size)
+            departures_text(txt, d.arriving, font_size)
         })
         .width(col_departure)
         .align_x(iced::Alignment::End),
@@ -163,4 +169,8 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
         .padding(20)
         .style(|_| container::background(Color::BLACK))
         .into()
+}
+
+pub fn blink_tick_subscription(state: &State) -> Subscription<Message> {
+    time::every(Duration::from_millis(state.config.retro_ui.blink_speed_millis)).map(|_| Message::RetroUiBlinkTick)
 }
