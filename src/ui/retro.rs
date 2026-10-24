@@ -92,7 +92,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
                 }
                 format!("{} fällt aus", d.vehicle_type)
             } else if d.arriving {
-                "".to_string()
+                "jetzt".to_string()
             } else {
                 format!("{} min", d.when)
             };
