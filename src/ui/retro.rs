@@ -172,5 +172,8 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
 }
 
 pub fn blink_tick_subscription(state: &State) -> Subscription<Message> {
-    time::every(Duration::from_millis(state.config.retro_ui.blink_speed_millis)).map(|_| Message::RetroUiBlinkTick)
+    time::every(Duration::from_millis(
+        state.config.retro_ui.blink_speed_millis,
+    ))
+    .map(|_| Message::RetroUiBlinkTick)
 }
