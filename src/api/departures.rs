@@ -113,8 +113,8 @@ pub struct Operator {
 pub struct Remark {
     #[serde(rename = "type")]
     pub kind: String,
-    pub code: String,
-    pub text: String,
+    pub code: Option<String>,
+    pub text: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
