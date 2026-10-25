@@ -143,19 +143,22 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
     .padding(iced::padding::left(15))
     .into();
 
-    let mut footer_children: Vec<Element<'_, Message>> = vec![stop_name_cell];
+    let bvg_logo_cell: Element<'_, Message> =
+        Container::new(image::viewer(state.bvg_logo.clone()).height(icon_height))
+            .padding(iced::padding::right(10))
+            .into();
+
+    let mut header_children: Vec<Element<'_, Message>> = vec![stop_name_cell];
     for icon in service_icons {
-        footer_children.push(Element::from(image::viewer(icon).height(icon_height)));
+        header_children.push(Element::from(image::viewer(icon).height(icon_height)));
     }
 
-    footer_children.push(Element::from(space().width(Length::Fill)));
-    footer_children.push(Element::from(
-        image::viewer(state.bvg_logo.clone()).height(icon_height),
-    ));
+    header_children.push(Element::from(space().width(Length::Fill)));
+    header_children.push(bvg_logo_cell);
 
-    let footer: Element<'_, Message> = row(footer_children)
+    let header: Element<'_, Message> = row(header_children)
         .spacing(font_size / 2)
-        .align_y(iced::Alignment::Center)
+        .align_y(iced::Alignment::End)
         .width(Length::Fill)
         .into();
 
@@ -194,7 +197,7 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
     .style(move |_| container::background(Color::WHITE))
     .into();
 
-    let inner = column![table, footer]
+    let inner = column![header, table]
         .spacing(5)
         .width(Length::Fill)
         .height(Length::Fill);

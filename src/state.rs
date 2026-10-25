@@ -80,17 +80,17 @@ impl From<Departure> for DisplayDeparture {
     fn from(departure: Departure) -> Self {
         let now = chrono::Utc::now();
         let when = departure.when.unwrap_or(departure.planned_when);
-        let delta = when - now;
+        let delta_minutes = std::cmp::max(0, (when - now).num_minutes());
 
         let mode = departure.line.mode;
         DisplayDeparture {
             line: departure.line.name,
-            direction: departure.direction.replace(" (Berlin)", ""),
-            when: delta.num_minutes().to_string(),
+            direction: strip_berlin(&departure.direction),
+            when: delta_minutes.to_string(),
             cancelled: departure.cancelled,
             vehicle_type: mode.as_german_str().to_string(),
             mode,
-            arriving: delta.num_minutes() <= 0,
+            arriving: delta_minutes <= 0,
             trip_id: departure.trip_id,
         }
     }
@@ -144,4 +144,8 @@ impl ModernUiState {
         let font = Font::with_name(font_name);
         Self { font, line_icons }
     }
+}
+
+pub fn strip_berlin(name: &str) -> String {
+    name.replace(" (Berlin)", "")
 }

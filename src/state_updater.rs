@@ -8,7 +8,7 @@ use tokio::time::sleep;
 
 use crate::{
     config::Config,
-    state::{Departures, DisplayDeparture, State, Stop},
+    state::{Departures, DisplayDeparture, State, Stop, strip_berlin},
 };
 
 // 10 minutes
@@ -80,7 +80,7 @@ async fn fetch_departures(
             continue;
         };
         let stop = Stop {
-            name: first_departure.stop.name.clone(),
+            name: strip_berlin(&first_departure.stop.name),
             products: first_departure.stop.products,
         };
 
