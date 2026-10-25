@@ -58,7 +58,7 @@ pub struct Departures {
     pub last_update: Option<DateTime<Local>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
 pub struct Stop {
     pub name: String,
     pub products: Option<Products>,

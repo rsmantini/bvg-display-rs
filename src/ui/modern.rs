@@ -9,13 +9,13 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
     let black = Color::BLACK;
     let font_size = state.config.modern_ui.font_size;
 
-    // Flatten every stop's departures into a single set of table rows.
-    let rows: Vec<&DisplayDeparture> = state
+    let (stop, rows): (_, Vec<&DisplayDeparture>) = state
         .departures
         .departures
-        .values()
-        .flat_map(|v| v.iter())
-        .collect();
+        .iter()
+        .next()
+        .map(|(k, v)| (k.clone(), v.iter().collect()))
+        .unwrap_or_default();
 
     // The destination uses the base font size; the departure time is
     // larger (destination : departure time = 0.72 : 1).
@@ -44,7 +44,7 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
     // The departure time is rendered as `{minutes}′` in the full size.
     let departure_cell = |d: &DisplayDeparture| -> Element<'_, Message> {
         text(if d.cancelled {
-            String::new()
+            format!("{} fällt aus", d.vehicle_type)
         } else {
             format!("{}′", d.when)
         })
@@ -102,22 +102,8 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
         }
     };
 
-    let stop_name = state
-        .departures
-        .departures
-        .keys()
-        .map(|s| s.name.clone())
-        .collect::<Vec<_>>()
-        .join(", ");
-
-    let products = state
-        .departures
-        .departures
-        .keys()
-        .next()
-        .and_then(|s| s.products);
-
-    let service_icons: Vec<image::Handle> = products
+    let service_icons: Vec<image::Handle> = stop
+        .products
         .map(|p| {
             let icons = &state.modern_ui.line_icons;
             [
@@ -135,7 +121,7 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
         .unwrap_or_default();
 
     let stop_name_cell: Element<'_, Message> = Container::new(
-        text(stop_name)
+        text(stop.name)
             .font(departure_font)
             .size(font_size)
             .color(black),

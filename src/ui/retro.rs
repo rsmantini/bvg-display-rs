@@ -16,13 +16,13 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     let col_destination = Length::Fill;
     let col_departure = Length::Shrink;
 
-    // Flatten every stop's departures into a single set of table rows.
-    let rows: Vec<&DisplayDeparture> = state
+    let (stop_name, rows): (_, Vec<&DisplayDeparture>) = state
         .departures
         .departures
-        .values()
-        .flat_map(|v| v.iter())
-        .collect();
+        .iter()
+        .next()
+        .map(|(k, v)| (k.name.clone(), v.iter().collect()))
+        .unwrap_or_default();
 
     // Box 1: white background, black text — the column titles.
     // Each title is wrapped in a container with padding that mirrors the
@@ -92,7 +92,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
                 }
                 format!("{} fällt aus", d.vehicle_type)
             } else if d.arriving {
-                String::new()
+                "jetzt".to_string()
             } else {
                 format!("{} min", d.when)
             };
@@ -116,15 +116,6 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     .padding(5)
     .style(move |_| container::background(black))
     .into();
-
-    // Box 3: white background, black text — stop name (left), last update (right).
-    let stop_name = state
-        .departures
-        .departures
-        .keys()
-        .map(|s| s.name.clone())
-        .collect::<Vec<_>>()
-        .join(", ");
 
     let last_update = state
         .departures
