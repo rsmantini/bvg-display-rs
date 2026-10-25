@@ -15,6 +15,9 @@ fullscreen = true
 
 show_arriving_trips_only_once = true
 
+# Which UI to display: "retro" or "modern".
+ui = "retro"
+
 [retro_ui]
 # Name of the font (loaded from assets_dir/fonts) used to render departures.
 font = "Advanced Dot Digital-7" 
@@ -23,3 +26,9 @@ max_display_rows = 10
 # Reduce the font of the canceled trip message
 reduce_canceled_text = false
 blink_speed_millis = 700
+
+[modern_ui]
+# Name of the font (loaded from assets_dir/fonts) used to render departures.
+font = "Fira Sans Black"
+font_size = 24
+max_display_rows = 10

@@ -42,7 +42,7 @@ pub struct Departure {
 pub struct Stop {
     #[serde(rename = "type")]
     pub kind: String,
-    pub id: String,
+    pub id: Option<String>,
     pub name: String,
     pub location: Option<Location>,
     pub products: Option<Products>,
@@ -66,19 +66,19 @@ pub struct Location {
 /// Flags describing which product categories are available at a stop.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Products {
-    pub suburban: bool,
-    pub subway: bool,
-    pub tram: bool,
-    pub bus: bool,
-    pub ferry: bool,
-    pub express: bool,
-    pub regional: bool,
+    pub suburban: Option<bool>,
+    pub subway: Option<bool>,
+    pub tram: Option<bool>,
+    pub bus: Option<bool>,
+    pub ferry: Option<bool>,
+    pub express: Option<bool>,
+    pub regional: Option<bool>,
 }
 
 /// Alternative identifiers for a stop.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StopIds {
-    pub ifopt: String,
+    pub ifopt: Option<String>,
 }
 
 /// The line / vehicle running the trip.
@@ -87,7 +87,7 @@ pub struct StopIds {
 pub struct Line {
     #[serde(rename = "type")]
     pub kind: String,
-    pub id: String,
+    pub id: Option<String>,
     pub fahrt_nr: Option<String>,
     pub name: String,
     pub public: Option<bool>,
@@ -104,8 +104,8 @@ pub struct Line {
 pub struct Operator {
     #[serde(rename = "type")]
     pub kind: String,
-    pub id: String,
-    pub name: String,
+    pub id: Option<String>,
+    pub name: Option<String>,
 }
 
 /// An informational remark attached to a departure (e.g. hints).

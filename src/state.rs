@@ -7,7 +7,7 @@ use reqwest::Client;
 
 use crate::{
     api::departures::Departure,
-    config::{Config, RetroUiConfig},
+    config::{Config, ModernUiConfig, RetroUiConfig},
 };
 
 #[derive(Clone)]
@@ -18,11 +18,13 @@ pub struct State {
     pub bvg_logo: image::Handle,
     pub displayed_arriving_trips: RapidHashMap<String, i64>,
     pub retro_ui: RetroUiState,
+    pub modern_ui: ModernUiState,
 }
 
 impl State {
     pub fn new(config: Config, bvg_logo: Vec<u8>) -> Self {
         let retro_ui = RetroUiState::new(&config.retro_ui);
+        let modern_ui = ModernUiState::new(&config.modern_ui);
         State {
             config: Arc::new(config),
             http_client: Client::new(),
@@ -30,6 +32,7 @@ impl State {
             bvg_logo: image::Handle::from_bytes(bvg_logo),
             displayed_arriving_trips: RapidHashMap::default(),
             retro_ui,
+            modern_ui,
         }
     }
 }
@@ -105,5 +108,18 @@ impl RetroUiState {
             blink_tick: 0,
             font,
         }
+    }
+}
+
+#[derive(Clone)]
+pub struct ModernUiState {
+    pub font: Font,
+}
+
+impl ModernUiState {
+    pub fn new(config: &ModernUiConfig) -> Self {
+        let font_name: &'static str = Box::leak(Box::new(config.font.clone()));
+        let font = Font::with_name(font_name);
+        Self { font }
     }
 }

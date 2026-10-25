@@ -10,8 +10,10 @@ use clap::Parser;
 use iced::{Settings, Task, window::Settings as WindowSettings};
 
 use crate::{
+    config::Ui,
     state::State,
     state_updater::{Message, escape_subscription, update},
+    ui::modern::modern_view,
     ui::retro::{blink_tick_subscription, retro_view},
 };
 
@@ -28,7 +30,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (settings, state) = init(&cli)?;
     let fullscreen = state.config.fullscreen;
 
-    iced::application(move || new(state.clone()), update, retro_view)
+    // Pick the view function based on the configured UI.
+    let view = if state.config.ui == Ui::Modern {
+        modern_view
+    } else {
+        retro_view
+    };
+
+    iced::application(move || new(state.clone()), update, view)
         .window(iced::window::Settings {
             fullscreen,
             ..WindowSettings::default()
