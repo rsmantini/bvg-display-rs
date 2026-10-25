@@ -8,7 +8,7 @@ use tokio::time::sleep;
 
 use crate::{
     config::Config,
-    state::{Departures, DisplayDeparture, State},
+    state::{Departures, DisplayDeparture, State, Stop},
 };
 
 // 10 minutes
@@ -76,8 +76,12 @@ async fn fetch_departures(
         .await
         .map_err(|e| Box::new(e) as Box<dyn Error + Send>)?;
 
-        let Some(stop_name) = response.departures.first().map(|d| d.stop.name.clone()) else {
+        let Some(first_departure) = response.departures.first() else {
             continue;
+        };
+        let stop = Stop {
+            name: first_departure.stop.name.clone(),
+            products: first_departure.stop.products,
         };
 
         last_update = Local
@@ -86,10 +90,10 @@ async fn fetch_departures(
 
         println!(
             "fetched departures for stop: {}; last updated: {:?}",
-            stop_name, last_update
+            stop.name, last_update
         );
 
-        let entry = departures.entry(stop_name.clone()).or_insert_with(Vec::new);
+        let entry = departures.entry(stop).or_insert_with(Vec::new);
         for departure in response.departures {
             let display_departure = DisplayDeparture::from(departure);
             println!("  {}", display_departure);

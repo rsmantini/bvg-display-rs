@@ -122,7 +122,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
         .departures
         .departures
         .keys()
-        .cloned()
+        .map(|s| s.name.clone())
         .collect::<Vec<_>>()
         .join(", ");
 

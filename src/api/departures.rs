@@ -64,7 +64,7 @@ pub struct Location {
 }
 
 /// Flags describing which product categories are available at a stop.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Products {
     pub suburban: Option<bool>,
     pub subway: Option<bool>,
@@ -117,7 +117,7 @@ pub struct Remark {
     pub text: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Mode {
     Unknown,
     Bus,

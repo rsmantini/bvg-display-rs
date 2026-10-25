@@ -7,7 +7,8 @@ pub mod ui;
 use std::{borrow::Cow, error::Error};
 
 use clap::Parser;
-use iced::{Settings, Task, window::Settings as WindowSettings};
+use iced::{Settings, Task, widget::image, window::Settings as WindowSettings};
+use rapidhash::{HashMapExt, RapidHashMap};
 
 use crate::{
     config::Ui,
@@ -58,13 +59,18 @@ fn init(cli: &Cli) -> Result<(Settings, State), Box<dyn Error>> {
 
     let fonts = load_fonts(&config.assets_dir.join("fonts"))?;
     let bvg_logo = std::fs::read(config.assets_dir.join("images/bvg-logo.svg.png"))?;
+    let line_icons = if config.ui == Ui::Modern {
+        load_line_icons(&config.assets_dir)?
+    } else {
+        RapidHashMap::default()
+    };
 
     let settings = Settings {
         fonts,
         ..Settings::default()
     };
 
-    Ok((settings, State::new(config, bvg_logo)))
+    Ok((settings, State::new(config, bvg_logo, line_icons)))
 }
 
 /// Recursively load every `.ttf` font found under `dir`.
@@ -87,4 +93,29 @@ fn load_fonts(dir: &std::path::Path) -> Result<Vec<Cow<'static, [u8]>>, Box<dyn 
         }
     }
     Ok(fonts)
+}
+
+/// Load every line icon under `assets_dir/line_icons` (S-Bahn, U-Bahn,
+/// tram and bus) into a map keyed by the line name: `S41.png` becomes
+/// `S41`, `U7.png` becomes `U7`, and the generic `bus.png` / `tram.png`
+/// become `bus` / `tram`.
+fn load_line_icons(
+    assets_dir: &std::path::Path,
+) -> Result<RapidHashMap<String, image::Handle>, Box<dyn Error>> {
+    let dir = assets_dir.join("line_icons");
+    let mut line_icons = RapidHashMap::new();
+    for entry in std::fs::read_dir(&dir)? {
+        let path = entry?.path();
+        if path.extension().is_some_and(|e| e == "png") {
+            let key = path
+                .file_stem()
+                .ok_or_else(|| format!("icon file without a stem: {:?}", path))?
+                .to_string_lossy()
+                .into_owned();
+            println!("reading line icon file {:?}", path);
+            let bytes = std::fs::read(&path)?;
+            line_icons.insert(key, image::Handle::from_bytes(bytes));
+        }
+    }
+    Ok(line_icons)
 }

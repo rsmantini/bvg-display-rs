@@ -19,17 +19,12 @@ pub struct Config {
 }
 
 /// Which UI the app displays.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Ui {
+    #[default]
     Retro,
     Modern,
-}
-
-impl Default for Ui {
-    fn default() -> Self {
-        Ui::Retro
-    }
 }
 
 impl Config {
