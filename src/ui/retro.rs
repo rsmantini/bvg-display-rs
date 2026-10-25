@@ -66,9 +66,9 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     let yellow = Color::from_rgb(1.0, 0.67, 0.02);
     let blink_tick = state.retro_ui.blink_tick;
 
-    let departures_text = |txt: String, arriving, font_size| {
+    let departures_text = |txt: String, blink, font_size| {
         let txt = text(txt).font(state.retro_ui.font).size(font_size);
-        if arriving && blink_tick.is_multiple_of(2) {
+        if blink && blink_tick.is_multiple_of(2) {
             txt.color(black)
         } else {
             txt.color(yellow)
@@ -78,7 +78,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     // Box 2: black background, yellow text — the departure table (no header).
     let columns: [iced::widget::table::Column<'_, '_, &DisplayDeparture, Message>; 3] = [
         table::column(text(""), |d: &DisplayDeparture| {
-            departures_text(d.line.clone(), d.arriving, font_size).width(col_line)
+            departures_text(d.line.clone(), false, font_size).width(col_line)
         }),
         table::column(text(""), |d: &DisplayDeparture| {
             departures_text(d.direction.clone(), d.arriving, font_size)
@@ -92,7 +92,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
                 }
                 format!("{} fällt aus", d.vehicle_type)
             } else if d.arriving {
-                "jetzt".to_string()
+                String::new()
             } else {
                 format!("{} min", d.when)
             };
