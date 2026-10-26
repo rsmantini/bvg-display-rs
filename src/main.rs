@@ -66,11 +66,7 @@ fn init(cli: &Cli) -> Result<(Settings, State), Box<dyn Error>> {
 
     let fonts = load_fonts(&config.assets_dir.join("fonts"))?;
     let bvg_logo = std::fs::read(config.assets_dir.join("images/bvg-logo.svg.png"))?;
-    let line_icons = if config.ui == Ui::Modern {
-        load_line_icons(&config.assets_dir)?
-    } else {
-        RapidHashMap::default()
-    };
+    let line_icons = load_line_icons(&config.assets_dir)?;
 
     let settings = Settings {
         fonts,
