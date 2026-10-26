@@ -7,12 +7,13 @@ use reqwest::Client;
 
 use crate::{
     api::departures::{Departure, Mode, Product, Products},
-    config::{Config, ModernUiConfig, RetroUiConfig},
+    config::{Config, ModernUiConfig, RetroUiConfig, Ui},
 };
 
 #[derive(Clone)]
 pub struct State {
     pub config: Arc<Config>,
+    pub selected_ui: Ui,
     pub http_client: Client,
     pub departures: Departures,
     pub bvg_logo: image::Handle,
@@ -34,8 +35,10 @@ impl State {
     ) -> Self {
         let retro_ui = RetroUiState::new(&config.retro_ui);
         let modern_ui = ModernUiState::new(&config.modern_ui, line_icons);
+        let selected_ui = config.ui;
         State {
             config: Arc::new(config),
+            selected_ui,
             http_client: Client::new(),
             departures: Departures::default(),
             bvg_logo: image::Handle::from_bytes(bvg_logo),

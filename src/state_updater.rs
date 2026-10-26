@@ -21,6 +21,7 @@ pub enum Message {
     DeparturesFetched(Departures),
     Quit,
     RetroUiBlinkTick,
+    ToggleUi,
 }
 
 pub fn update(state: &mut State, message: Message) -> Task<Message> {
@@ -40,6 +41,10 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
             Task::perform(sleep(Duration::from_secs(10)), |_| Message::FetchDepartures)
         }
         Message::Quit => exit(),
+        Message::ToggleUi => {
+            state.selected_ui = state.selected_ui.toggle();
+            Task::none()
+        }
         Message::RetroUiBlinkTick => {
             state.retro_ui.blink_tick += 1;
             Task::none()

@@ -7,7 +7,7 @@ pub mod ui;
 use std::{borrow::Cow, error::Error};
 
 use clap::Parser;
-use iced::{Settings, Task, widget::image, window::Settings as WindowSettings};
+use iced::{Element, Settings, Task, widget::image, window::Settings as WindowSettings};
 use rapidhash::{HashMapExt, RapidHashMap};
 
 use crate::{
@@ -31,13 +31,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (settings, state) = init(&cli)?;
     let fullscreen = state.config.fullscreen;
 
-    // Pick the view function based on the configured UI.
-    let view = if state.config.ui == Ui::Modern {
-        modern_view
-    } else {
-        retro_view
-    };
-
     iced::application(move || new(state.clone()), update, view)
         .window(iced::window::Settings {
             fullscreen,
@@ -52,6 +45,20 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn new(state: State) -> (State, Task<Message>) {
     (state, Task::done(Message::FetchDepartures))
+}
+
+/// Pick the view based on the currently selected UI and make a click
+/// anywhere on the screen toggle between the UIs.
+fn view(state: &State) -> Element<'_, Message> {
+    let content = if state.selected_ui == Ui::Modern {
+        modern_view(state)
+    } else {
+        retro_view(state)
+    };
+
+    iced::widget::MouseArea::new(content)
+        .on_press(Message::ToggleUi)
+        .into()
 }
 
 fn init(cli: &Cli) -> Result<(Settings, State), Box<dyn Error>> {

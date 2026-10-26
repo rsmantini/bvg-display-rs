@@ -46,6 +46,15 @@ pub enum Ui {
     Modern,
 }
 
+impl Ui {
+    pub fn toggle(self) -> Self {
+        match self {
+            Ui::Retro => Ui::Modern,
+            Ui::Modern => Ui::Retro,
+        }
+    }
+}
+
 impl Config {
     pub fn load(path: &Path) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
         let contents = std::fs::read_to_string(path)
