@@ -2,7 +2,7 @@
 
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Default, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize)]
 pub struct Config {
     pub bvg_stops: Vec<String>,
     pub max_api_results: u32,
@@ -16,6 +16,25 @@ pub struct Config {
     pub modern_ui: ModernUiConfig,
     #[serde(default)]
     pub show_arriving_trips_only_once: bool,
+    #[serde(default)]
+    pub filter_substations: bool,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            bvg_stops: vec![],
+            max_api_results: 0,
+            max_departure_time_minutes: 0,
+            assets_dir: PathBuf::new(),
+            fullscreen: false,
+            ui: Ui::default(),
+            retro_ui: RetroUiConfig::default(),
+            modern_ui: ModernUiConfig::default(),
+            show_arriving_trips_only_once: false,
+            filter_substations: true,
+        }
+    }
 }
 
 /// Which UI the app displays.

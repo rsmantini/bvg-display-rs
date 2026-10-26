@@ -15,6 +15,9 @@ fullscreen = true
 
 show_arriving_trips_only_once = true
 
+# Filter out sub-stations returned by the API for big stations.
+filter_substations = true
+
 # Which UI to display: "retro" or "modern".
 ui = "retro"
 

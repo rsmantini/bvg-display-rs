@@ -1,9 +1,13 @@
 use iced::{
     Color, Element, Length, Pixels,
-    widget::{Container, column, container, image, row, space, table, text},
+    widget::{Container, column, container, image, row, space, text},
 };
 
-use crate::{Message, State, api::departures::Mode, state::DisplayDeparture};
+use crate::{
+    Message, State,
+    api::departures::Product,
+    state::{DisplayDeparture, LineIcon},
+};
 
 pub fn modern_view(state: &State) -> Element<'_, Message> {
     let black = Color::BLACK;
@@ -17,11 +21,8 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
         .map(|(k, v)| (k.clone(), v.iter().collect()))
         .unwrap_or_default();
 
-    // The destination uses the base font size; the departure time is
-    // larger (destination : departure time = 0.72 : 1).
     let departure_font_size = (font_size as f32 / 0.72).round() as u32;
 
-    // The destination is rendered in the configured font at the base size.
     let destination_text = |txt: String| {
         text(txt)
             .font(state.modern_ui.font)
@@ -29,19 +30,14 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
             .color(black)
     };
 
-    // The departure time and the line name are rendered in Fira Sans Bold.
-    // The TTF's family name is "Fira Sans" (bold is a weight, not a
-    // family), so the font is matched by family name + weight.
     let departure_font = iced::Font {
         family: iced::font::Family::Name("Fira Sans"),
         weight: iced::font::Weight::Bold,
         ..iced::Font::default()
     };
 
-    // The line name uses the departure time font at the base size.
     let line_text = |txt: String| text(txt).font(departure_font).size(font_size).color(black);
 
-    // The departure time is rendered as `{minutes}′` in the full size.
     let departure_cell = |d: &DisplayDeparture| -> Element<'_, Message> {
         text(if d.cancelled {
             format!("{} fällt aus", d.vehicle_type)
@@ -54,39 +50,34 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
         .into()
     };
 
-    // Icons scale with the font size (2x the font size in height), keeping
-    // their aspect ratio: the width shrinks to match.
     let icon_height = Pixels::from(font_size * 2);
 
-    // Determine the line icon from the departure's mode:
-    // - S-Bahn / U-Bahn (`Mode::Train`): the icon matching the line name
-    //   (`S41`, `U7`, ...), replacing the line text when present.
-    // - Bus / Tram: the generic `bus` / `tram` icon, shown together with
-    //   the line name.
-    let line_icon = |d: &DisplayDeparture| -> Option<image::Handle> {
+    let train_icon_height = Pixels::from(font_size * 3 / 2);
+
+    let line_icon = |d: &DisplayDeparture| -> Option<&LineIcon> {
         let icons = &state.modern_ui.line_icons;
-        match d.mode {
-            Mode::Train => icons.get(&d.line).cloned(),
-            Mode::Bus => icons.get("bus").cloned(),
-            Mode::Tram => icons.get("tram").cloned(),
-            Mode::Unknown => None,
+        match d.product {
+            Product::Suburban | Product::Subway | Product::Regional => icons.get(&d.line),
+            Product::Bus => icons.get("bus"),
+            Product::Tram => icons.get("tram"),
+            _ => None,
         }
     };
 
     let line_cell = |d: &DisplayDeparture| -> Element<'_, Message> {
-        match d.mode {
-            // S-Bahn / U-Bahn: icon instead of the line text when available.
-            Mode::Train => match line_icon(d) {
-                Some(icon) => image::viewer(icon).height(icon_height).into(),
+        match d.product {
+            Product::Suburban | Product::Subway | Product::Regional => match line_icon(d) {
+                Some(icon) => image::viewer(icon.handle.clone())
+                    .height(train_icon_height)
+                    .into(),
                 None => line_text(d.line.clone())
                     .align_x(iced::Alignment::Start)
                     .into(),
             },
-            // Bus / Tram: icon followed by the line name.
-            Mode::Bus | Mode::Tram => match line_icon(d) {
+            Product::Bus | Product::Tram => match line_icon(d) {
                 Some(icon) => row![
-                    Element::from(image::viewer(icon).height(icon_height)),
-                    Element::from(line_text(d.line.clone())),
+                    Element::from(image::viewer(icon.handle.clone()).height(icon_height)),
+                    Element::from(line_text(format!(" {}", d.line))),
                 ]
                 .spacing(2)
                 .align_y(iced::Alignment::Center)
@@ -95,10 +86,29 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
                     .align_x(iced::Alignment::Start)
                     .into(),
             },
-            // Unknown mode: plain line text.
-            Mode::Unknown => line_text(d.line.clone())
+            _ => line_text(d.line.clone())
                 .align_x(iced::Alignment::Start)
                 .into(),
+        }
+    };
+
+    let line_cell_width = |d: &DisplayDeparture| -> u32 {
+        let mut line_chars_count = d.line.chars().count() as u32;
+        if matches!(d.product, Product::Bus | Product::Tram) {
+            line_chars_count += 1;
+        }
+
+        let text_width = line_chars_count * font_size * 3 / 5;
+        let icon_width =
+            |target_height: u32, width: u32, height: u32| (target_height * width) / height.max(1);
+        match (d.product, line_icon(d)) {
+            (Product::Suburban | Product::Subway | Product::Regional, Some(icon)) => {
+                icon_width(font_size * 3 / 2, icon.width, icon.height)
+            }
+            (Product::Bus | Product::Tram, Some(icon)) => {
+                icon_width(font_size * 2, icon.width, icon.height) + 2 + text_width
+            }
+            _ => text_width,
         }
     };
 
@@ -115,7 +125,7 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
             ]
             .iter()
             .filter(|(enabled, _)| *enabled)
-            .filter_map(|(_, key)| icons.get(*key).cloned())
+            .filter_map(|(_, key)| icons.get(*key).map(|icon| icon.handle.clone()))
             .collect()
         })
         .unwrap_or_default();
@@ -148,42 +158,73 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
         .width(Length::Fill)
         .into();
 
-    let columns: [iced::widget::table::Column<'_, '_, &DisplayDeparture, Message>; 4] = [
-        table::column(text(""), line_cell).width(Length::Shrink),
-        // Empty spacer column providing the gap between the line name
-        // and the destination (half the icon height).
-        table::column(text(""), |_| text("")).width(Pixels::from(font_size)),
-        // Vertically centered so the destination text aligns with the
-        // icon / line name row (the icons are taller than the text).
-        table::column(text(""), |d: &DisplayDeparture| {
-            destination_text(d.direction.clone())
+    let visible_rows: Vec<&DisplayDeparture> = rows
+        .iter()
+        .copied()
+        .take(state.config.modern_ui.max_display_rows)
+        .collect();
+
+    let separator_color = iced::theme::Theme::Light
+        .extended_palette()
+        .background
+        .strong
+        .color;
+
+    let line_col_width = visible_rows
+        .iter()
+        .copied()
+        .map(line_cell_width)
+        .max()
+        .unwrap_or(0);
+
+    let departure_rows: Vec<Element<'_, Message>> = visible_rows
+        .iter()
+        .map(|d| {
+            let line = Container::new(line_cell(d))
+                .width(Pixels::from(line_col_width))
+                .height(Length::Fill)
+                .align_x(iced::Alignment::Start)
+                .align_y(iced::Alignment::Center);
+            let destination =
+                Container::new(destination_text(d.direction.clone())).width(Length::Fill);
+            let departure = Container::new(departure_cell(d)).align_x(iced::Alignment::End);
+
+            row![
+                line,
+                space().width(Pixels::from(font_size)),
+                destination,
+                departure,
+            ]
+            .align_y(iced::Alignment::Center)
+            .padding(iced::padding::vertical(Pixels::from(10)))
+            .into()
         })
+        .collect();
+
+    let separator = || {
+        Container::new(space().width(Length::Fill))
+            .width(Length::Fill)
+            .height(Pixels::from(2))
+            .padding(0)
+            .style(move |_| container::background(separator_color))
+            .into()
+    };
+
+    let mut departure_children: Vec<Element<'_, Message>> =
+        Vec::with_capacity(2 * departure_rows.len());
+    for row in departure_rows {
+        departure_children.push(separator());
+        departure_children.push(row);
+    }
+
+    let departures: Element<'_, Message> = Container::new(column(departure_children))
         .width(Length::Fill)
-        .align_y(iced::Alignment::Center),
-        table::column(text(""), departure_cell)
-            .width(Length::Shrink)
-            .align_x(iced::Alignment::End)
-            .align_y(iced::Alignment::Center),
-    ];
+        .height(Length::Fill)
+        .padding(5)
+        .style(move |_| container::background(Color::WHITE))
+        .into();
 
-    let table: Element<'_, Message> = Container::new(
-        table(
-            columns,
-            rows.iter()
-                .copied()
-                .take(state.config.modern_ui.max_display_rows),
-        )
-        .separator_x(Pixels::ZERO)
-        .separator_y(Pixels::from(2))
-        .padding_y(Pixels::from(10)),
-    )
-    .width(Length::Fill)
-    .height(Length::Fill)
-    .padding(5)
-    .style(move |_| container::background(Color::WHITE))
-    .into();
-
-    let inner = column![header, table]
+    let inner = column![header, departures]
         .spacing(5)
         .width(Length::Fill)
         .height(Length::Fill);

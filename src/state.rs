@@ -6,7 +6,7 @@ use rapidhash::RapidHashMap;
 use reqwest::Client;
 
 use crate::{
-    api::departures::{Departure, Mode, Products},
+    api::departures::{Departure, Mode, Product, Products},
     config::{Config, ModernUiConfig, RetroUiConfig},
 };
 
@@ -25,12 +25,12 @@ impl State {
     /// Create the state.
     ///
     /// `line_icons` maps a line name (e.g. `S41`, `U7`, `bus`, `tram`) to
-    /// its preloaded image handle and is only populated when the modern UI
-    /// is selected.
+    /// its preloaded image handle and original pixel dimensions and is only
+    /// populated when the modern UI is selected.
     pub fn new(
         config: Config,
         bvg_logo: Vec<u8>,
-        line_icons: RapidHashMap<String, image::Handle>,
+        line_icons: RapidHashMap<String, LineIcon>,
     ) -> Self {
         let retro_ui = RetroUiState::new(&config.retro_ui);
         let modern_ui = ModernUiState::new(&config.modern_ui, line_icons);
@@ -72,6 +72,7 @@ pub struct DisplayDeparture {
     pub cancelled: bool,
     pub vehicle_type: String,
     pub mode: Mode,
+    pub product: Product,
     pub arriving: bool,
     pub trip_id: String,
 }
@@ -90,6 +91,7 @@ impl From<Departure> for DisplayDeparture {
             cancelled: departure.cancelled,
             vehicle_type: mode.as_german_str().to_string(),
             mode,
+            product: departure.line.product.unwrap_or(Product::Unknown),
             arriving: delta_minutes <= 0,
             trip_id: departure.trip_id,
         }
@@ -130,16 +132,25 @@ impl RetroUiState {
     }
 }
 
+/// A preloaded line icon together with its original pixel dimensions,
+/// used to scale the icon at a fixed height while keeping its aspect ratio.
+#[derive(Clone)]
+pub struct LineIcon {
+    pub handle: image::Handle,
+    pub width: u32,
+    pub height: u32,
+}
+
 #[derive(Clone)]
 pub struct ModernUiState {
     pub font: Font,
     /// Line icons keyed by line name (`S41`, `U7`, ...), plus the generic
     /// `bus` and `tram` icons.
-    pub line_icons: RapidHashMap<String, image::Handle>,
+    pub line_icons: RapidHashMap<String, LineIcon>,
 }
 
 impl ModernUiState {
-    pub fn new(config: &ModernUiConfig, line_icons: RapidHashMap<String, image::Handle>) -> Self {
+    pub fn new(config: &ModernUiConfig, line_icons: RapidHashMap<String, LineIcon>) -> Self {
         let font_name: &'static str = Box::leak(Box::new(config.font.clone()));
         let font = Font::with_name(font_name);
         Self { font, line_icons }

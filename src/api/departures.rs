@@ -42,7 +42,7 @@ pub struct Departure {
 pub struct Stop {
     #[serde(rename = "type")]
     pub kind: String,
-    pub id: Option<String>,
+    pub id: String,
     pub name: String,
     pub location: Option<Location>,
     pub products: Option<Products>,
@@ -75,6 +75,30 @@ pub struct Products {
     pub regional: Option<bool>,
 }
 
+impl Products {
+    /// Merge two `Products` with logical OR.
+    ///
+    /// `Some(true)` or `Some(false)` on either side wins over the other
+    /// value; a flag stays `None` only if it is `None` on both sides.
+    pub fn merge(&self, other: &Products) -> Products {
+        let or = |a: Option<bool>, b: Option<bool>| match (a, b) {
+            (Some(x), Some(y)) => Some(x || y),
+            (Some(x), None) => Some(x),
+            (None, Some(y)) => Some(y),
+            (None, None) => None,
+        };
+        Products {
+            suburban: or(self.suburban, other.suburban),
+            subway: or(self.subway, other.subway),
+            tram: or(self.tram, other.tram),
+            bus: or(self.bus, other.bus),
+            ferry: or(self.ferry, other.ferry),
+            express: or(self.express, other.express),
+            regional: or(self.regional, other.regional),
+        }
+    }
+}
+
 /// Alternative identifiers for a stop.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StopIds {
@@ -95,7 +119,8 @@ pub struct Line {
     pub product_name: Option<String>,
     #[serde(deserialize_with = "deserialize_mode")]
     pub mode: Mode,
-    pub product: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_product_opt")]
+    pub product: Option<Product>,
     pub operator: Option<Operator>,
 }
 
@@ -156,9 +181,82 @@ where
     Ok(Mode::from(string.as_str()))
 }
 
+/// The product category of a line (matches the `Products` flags).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Product {
+    Unknown,
+    Suburban,
+    Subway,
+    Tram,
+    Bus,
+    Ferry,
+    Express,
+    Regional,
+}
+
+impl From<&str> for Product {
+    fn from(s: &str) -> Self {
+        let s = s.to_lowercase();
+        match s.as_str() {
+            "suburban" => Product::Suburban,
+            "subway" => Product::Subway,
+            "tram" => Product::Tram,
+            "bus" => Product::Bus,
+            "ferry" => Product::Ferry,
+            "express" => Product::Express,
+            "regional" => Product::Regional,
+            _ => Product::Unknown,
+        }
+    }
+}
+
+fn deserialize_product_opt<'de, D>(deserializer: D) -> Result<Option<Product>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let string = Option::<String>::deserialize(deserializer)?;
+    Ok(string.as_deref().map(Product::from))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn merges_products_with_or() {
+        let a = Products {
+            suburban: Some(true),
+            subway: Some(false),
+            tram: None,
+            bus: Some(false),
+            ferry: None,
+            express: None,
+            regional: None,
+        };
+        let b = Products {
+            suburban: Some(false),
+            subway: Some(true),
+            tram: Some(false),
+            bus: Some(true),
+            ferry: Some(true),
+            express: None,
+            regional: None,
+        };
+        let merged = a.merge(&b);
+        assert_eq!(
+            merged,
+            Products {
+                suburban: Some(true),
+                subway: Some(true),
+                tram: Some(false),
+                bus: Some(true),
+                ferry: Some(true),
+                express: None,
+                regional: None,
+            }
+        );
+    }
 
     #[test]
     fn deserializes_departures_response() {
