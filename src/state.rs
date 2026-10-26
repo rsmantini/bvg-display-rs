@@ -1,23 +1,25 @@
 use std::{fmt::Display, sync::Arc};
 
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, Utc};
 use iced::{Font, widget::image};
 use rapidhash::RapidHashMap;
-use reqwest::Client;
 
 use crate::{
+    api::client::BvgClient,
     api::departures::{Departure, Mode, Product, Products},
+    assets::LineIcon,
     config::{Config, ModernUiConfig, RetroUiConfig, Ui},
+    fetch::ArrivingTripLog,
 };
 
 #[derive(Clone)]
 pub struct State {
     pub config: Arc<Config>,
     pub selected_ui: Ui,
-    pub http_client: Client,
+    pub bvg_client: BvgClient,
     pub departures: Departures,
     pub bvg_logo: image::Handle,
-    pub displayed_arriving_trips: RapidHashMap<String, i64>,
+    pub arriving_trips: ArrivingTripLog,
     pub retro_ui: RetroUiState,
     pub modern_ui: ModernUiState,
 }
@@ -39,30 +41,33 @@ impl State {
         State {
             config: Arc::new(config),
             selected_ui,
-            http_client: Client::new(),
+            bvg_client: BvgClient::new(),
             departures: Departures::default(),
             bvg_logo: image::Handle::from_bytes(bvg_logo),
-            displayed_arriving_trips: RapidHashMap::default(),
+            arriving_trips: ArrivingTripLog::default(),
             retro_ui,
             modern_ui,
         }
     }
-}
 
-impl Default for State {
-    fn default() -> Self {
-        Self::new(Config::default(), vec![], RapidHashMap::default())
+    pub fn ingest(&mut self, mut departures: Departures) {
+        // Arriving trips sometimes linger for minutes in the API response
+        // show them only once if this config is set
+        if self.config.show_arriving_trips_only_once {
+            self.arriving_trips.record_and_filter(&mut departures);
+        }
+        self.departures = departures;
     }
 }
 
 #[derive(Debug, Default, Clone)]
 pub struct Departures {
-    pub departures: RapidHashMap<Stop, Vec<DisplayDeparture>>,
+    pub stops: RapidHashMap<Station, Vec<DisplayDeparture>>,
     pub last_update: Option<DateTime<Local>>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
-pub struct Stop {
+pub struct Station {
     pub name: String,
     pub products: Option<Products>,
 }
@@ -73,30 +78,27 @@ pub struct DisplayDeparture {
     pub direction: String,
     pub when: String,
     pub cancelled: bool,
-    pub vehicle_type: String,
     pub mode: Mode,
     pub product: Product,
     pub arriving: bool,
     pub trip_id: String,
 }
 
-impl From<Departure> for DisplayDeparture {
-    fn from(departure: Departure) -> Self {
-        let now = chrono::Utc::now();
+impl DisplayDeparture {
+    pub fn from_api(departure: &Departure, now: DateTime<Utc>) -> Self {
         let when = departure.when.unwrap_or(departure.planned_when);
         let delta_minutes = std::cmp::max(0, (when - now).num_minutes());
 
         let mode = departure.line.mode;
         DisplayDeparture {
-            line: departure.line.name,
+            line: departure.line.name.clone(),
             direction: strip_berlin(&departure.direction),
             when: delta_minutes.to_string(),
             cancelled: departure.cancelled,
-            vehicle_type: mode.as_german_str().to_string(),
             mode,
             product: departure.line.product.unwrap_or(Product::Unknown),
             arriving: delta_minutes <= 0,
-            trip_id: departure.trip_id,
+            trip_id: departure.trip_id.clone(),
         }
     }
 }
@@ -110,12 +112,19 @@ impl Display for DisplayDeparture {
             self.direction,
             self.when,
             self.cancelled,
-            self.vehicle_type,
+            self.mode.as_german_str(),
             self.mode,
             self.arriving,
             self.trip_id,
         )
     }
+}
+
+/// Create an iced `Font` from a font name, leaking the string to a
+/// `'static` lifetime as required by `Font::with_name`.
+fn font_named(name: &str) -> Font {
+    let static_name: &'static str = Box::leak(Box::new(name.to_string()));
+    Font::with_name(static_name)
 }
 
 #[derive(Clone)]
@@ -126,22 +135,11 @@ pub struct RetroUiState {
 
 impl RetroUiState {
     pub fn new(config: &RetroUiConfig) -> Self {
-        let font_name: &'static str = Box::leak(Box::new(config.font.clone()));
-        let font = Font::with_name(font_name);
         Self {
             blink_tick: 0,
-            font,
+            font: font_named(&config.font),
         }
     }
-}
-
-/// A preloaded line icon together with its original pixel dimensions,
-/// used to scale the icon at a fixed height while keeping its aspect ratio.
-#[derive(Clone)]
-pub struct LineIcon {
-    pub handle: image::Handle,
-    pub width: u32,
-    pub height: u32,
 }
 
 #[derive(Clone)]
@@ -154,9 +152,10 @@ pub struct ModernUiState {
 
 impl ModernUiState {
     pub fn new(config: &ModernUiConfig, line_icons: RapidHashMap<String, LineIcon>) -> Self {
-        let font_name: &'static str = Box::leak(Box::new(config.font.clone()));
-        let font = Font::with_name(font_name);
-        Self { font, line_icons }
+        Self {
+            font: font_named(&config.font),
+            line_icons,
+        }
     }
 }
 

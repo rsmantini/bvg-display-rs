@@ -5,7 +5,11 @@ use iced::{
     widget::{Container, column, container, image, row, space, table, text},
 };
 
-use crate::{Message, State, state::DisplayDeparture};
+use crate::{
+    Message, State,
+    state::{DisplayDeparture, Station},
+    ui::first_stop,
+};
 
 pub fn retro_view(state: &State) -> Element<'_, Message> {
     let black = Color::BLACK;
@@ -16,13 +20,10 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     let col_destination = Length::Fill;
     let col_departure = Length::Shrink;
 
-    let (stop_name, rows): (_, Vec<&DisplayDeparture>) = state
-        .departures
-        .departures
-        .iter()
-        .next()
-        .map(|(k, v)| (k.name.clone(), v.iter().collect()))
-        .unwrap_or_default();
+    let (stop, rows): (Station, Vec<&DisplayDeparture>) = match first_stop(state) {
+        Some((s, rows)) => (s.clone(), rows.iter().collect()),
+        None => (Station::default(), Vec::new()),
+    };
 
     // Box 1: white background, black text — the column titles.
     // Each title is wrapped in a container with padding that mirrors the
@@ -90,7 +91,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
                 if state.config.retro_ui.reduce_canceled_text {
                     font_size /= 2;
                 }
-                format!("{} fällt aus", d.vehicle_type)
+                format!("{} fällt aus", d.mode.as_german_str())
             } else if d.arriving {
                 "jetzt".to_string()
             } else {
@@ -127,7 +128,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
 
     let footer: Element<'_, Message> = Container::new(
         row![
-            Container::new(bold_black_text(stop_name)).padding(iced::padding::all(15)),
+            Container::new(bold_black_text(stop.name)).padding(iced::padding::all(15)),
             space().width(Length::Fill),
             Container::new(text(last_update).color(black)).padding(iced::padding::all(15)),
             logo,

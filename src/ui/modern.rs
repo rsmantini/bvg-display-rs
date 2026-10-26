@@ -6,20 +6,19 @@ use iced::{
 use crate::{
     Message, State,
     api::departures::Product,
-    state::{DisplayDeparture, LineIcon},
+    assets::LineIcon,
+    state::{DisplayDeparture, Station},
+    ui::first_stop,
 };
 
 pub fn modern_view(state: &State) -> Element<'_, Message> {
     let black = Color::BLACK;
     let font_size = state.config.modern_ui.font_size;
 
-    let (stop, rows): (_, Vec<&DisplayDeparture>) = state
-        .departures
-        .departures
-        .iter()
-        .next()
-        .map(|(k, v)| (k.clone(), v.iter().collect()))
-        .unwrap_or_default();
+    let (stop, rows): (Station, Vec<&DisplayDeparture>) = match first_stop(state) {
+        Some((s, rows)) => (s.clone(), rows.iter().collect()),
+        None => (Station::default(), Vec::new()),
+    };
 
     let departure_font_size = (font_size as f32 / 0.72).round() as u32;
 
@@ -40,7 +39,7 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
 
     let departure_cell = |d: &DisplayDeparture| -> Element<'_, Message> {
         text(if d.cancelled {
-            format!("{} fällt aus", d.vehicle_type)
+            format!("{} fällt aus", d.mode.as_german_str())
         } else {
             format!("{}′", d.when)
         })
