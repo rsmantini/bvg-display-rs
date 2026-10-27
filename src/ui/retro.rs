@@ -116,6 +116,7 @@ pub fn retro_view(state: &State) -> Element<'_, Message> {
     .height(Length::Fill)
     .padding(5)
     .style(move |_| container::background(black))
+    .clip(true)
     .into();
 
     let last_update = state
