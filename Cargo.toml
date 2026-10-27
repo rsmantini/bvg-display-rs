@@ -1,5 +1,5 @@
 [package]
-name = "bvg-display"
+name = "bvg-display-rs"
 version = "0.1.0"
 edition = "2024"
 
