@@ -22,7 +22,7 @@ pub struct Assets {
 }
 
 impl Assets {
-    /// Load everything from `assets_dir` (fonts/, images/, line_icons/).
+    /// Load everything from `assets_dir` (`fonts/`, `images/`, `line_icons`/).
     pub fn load(assets_dir: &Path) -> Result<Self, Box<dyn Error>> {
         let fonts = load_fonts(&assets_dir.join("fonts"))?;
         let bvg_logo = std::fs::read(assets_dir.join("images/bvg-logo.svg.png"))?;
@@ -49,7 +49,7 @@ fn load_fonts(dir: &Path) -> Result<Vec<Cow<'static, [u8]>>, Box<dyn Error>> {
             if p.is_dir() {
                 stack.push(p);
             } else if p.extension().is_some_and(|e| e == "ttf") {
-                println!("reading font file {:?}", p);
+                println!("reading font file {}", p.display());
                 fonts.push(Cow::Owned(std::fs::read(p)?));
             }
         }
@@ -71,10 +71,10 @@ fn load_line_icons(assets_dir: &Path) -> Result<RapidHashMap<String, LineIcon>, 
         if path.extension().is_some_and(|e| e == "png") {
             let key = path
                 .file_stem()
-                .ok_or_else(|| format!("icon file without a stem: {:?}", path))?
+                .ok_or_else(|| format!("icon file without a stem: {}", path.display()))?
                 .to_string_lossy()
                 .into_owned();
-            println!("reading line icon file {:?}", path);
+            println!("reading line icon file {}", path.display());
             let bytes = std::fs::read(&path)?;
             let (width, height) = png_size(&bytes).unwrap_or((1, 1));
             line_icons.insert(

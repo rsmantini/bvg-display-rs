@@ -5,8 +5,10 @@ use iced::{Font, widget::image};
 use rapidhash::RapidHashMap;
 
 use crate::{
-    api::client::BvgClient,
-    api::departures::{Departure, Mode, Product, Products},
+    api::{
+        client::BvgClient,
+        departures::{Departure, Mode, Product, Products},
+    },
     assets::LineIcon,
     config::{Config, ModernUiConfig, RetroUiConfig, Ui},
     fetch::ArrivingTripLog,
@@ -30,6 +32,7 @@ impl State {
     /// `line_icons` maps a line name (e.g. `S41`, `U7`, `bus`, `tram`) to
     /// its preloaded image handle and original pixel dimensions and is only
     /// populated when the modern UI is selected.
+    #[must_use]
     pub fn new(
         config: Config,
         bvg_logo: Vec<u8>,
@@ -85,6 +88,7 @@ pub struct DisplayDeparture {
 }
 
 impl DisplayDeparture {
+    #[must_use]
     pub fn from_api(departure: &Departure, now: DateTime<Utc>) -> Self {
         let when = departure.when.unwrap_or(departure.planned_when);
         let delta_minutes = std::cmp::max(0, (when - now).num_minutes());
@@ -134,6 +138,7 @@ pub struct RetroUiState {
 }
 
 impl RetroUiState {
+    #[must_use]
     pub fn new(config: &RetroUiConfig) -> Self {
         Self {
             blink_tick: 0,
@@ -151,6 +156,7 @@ pub struct ModernUiState {
 }
 
 impl ModernUiState {
+    #[must_use]
     pub fn new(config: &ModernUiConfig, line_icons: RapidHashMap<String, LineIcon>) -> Self {
         Self {
             font: font_named(&config.font),
@@ -159,6 +165,7 @@ impl ModernUiState {
     }
 }
 
+#[must_use]
 pub fn strip_berlin(name: &str) -> String {
     name.replace(" (Berlin)", "")
 }

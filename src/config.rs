@@ -47,6 +47,7 @@ pub enum Ui {
 }
 
 impl Ui {
+    #[must_use]
     pub fn toggle(self) -> Self {
         match self {
             Ui::Retro => Ui::Modern,

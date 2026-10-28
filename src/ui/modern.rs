@@ -11,6 +11,7 @@ use crate::{
     ui::first_stop,
 };
 
+#[allow(clippy::too_many_lines)]
 pub fn modern_view(state: &State) -> Element<'_, Message> {
     let black = Color::BLACK;
     let font_size = state.config.modern_ui.font_size;
@@ -20,6 +21,11 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
         None => (Station::default(), Vec::new()),
     };
 
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_precision_loss
+    )]
     let departure_font_size = (font_size as f32 / 0.72).round() as u32;
 
     let destination_text = |txt: String| {
@@ -92,6 +98,7 @@ pub fn modern_view(state: &State) -> Element<'_, Message> {
     };
 
     let line_cell_width = |d: &DisplayDeparture| -> u32 {
+        #[allow(clippy::cast_possible_truncation)]
         let mut line_chars_count = d.line.chars().count() as u32;
         if matches!(d.product, Product::Bus | Product::Tram) {
             line_chars_count += 1;

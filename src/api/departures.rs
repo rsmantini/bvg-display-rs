@@ -80,6 +80,7 @@ impl Products {
     ///
     /// `Some(true)` or `Some(false)` on either side wins over the other
     /// value; a flag stays `None` only if it is `None` on both sides.
+    #[must_use]
     pub fn merge(&self, other: &Products) -> Products {
         let or = |a: Option<bool>, b: Option<bool>| match (a, b) {
             (Some(x), Some(y)) => Some(x || y),
@@ -163,6 +164,7 @@ impl From<&str> for Mode {
 }
 
 impl Mode {
+    #[must_use]
     pub fn as_german_str(&self) -> &'static str {
         match self {
             Mode::Unknown => "",
@@ -316,7 +318,7 @@ mod tests {
         assert_eq!(resp.departures[0].delay, Some(0));
         assert_eq!(resp.departures[0].platform, None);
         assert_eq!(resp.departures[0].occupancy.as_deref(), Some("low"));
-        assert_eq!(resp.realtime_data_updated_at, 1792441116);
+        assert_eq!(resp.realtime_data_updated_at, 1_792_441_116);
     }
 
     #[test]

@@ -11,6 +11,7 @@ use crate::{
     ui::first_stop,
 };
 
+#[allow(clippy::too_many_lines)]
 pub fn retro_view(state: &State) -> Element<'_, Message> {
     let black = Color::BLACK;
 

@@ -7,8 +7,7 @@ use chrono::{Local, TimeZone};
 use rapidhash::{HashMapExt, RapidHashMap};
 
 use crate::{
-    api::client::BvgClient,
-    api::departures::DeparturesResponse,
+    api::{client::BvgClient, departures::DeparturesResponse},
     config::Config,
     state::{Departures, DisplayDeparture, Station, strip_berlin},
 };
@@ -56,7 +55,7 @@ pub async fn fetch_departures(
 
     // The api returns multiple sub stations for some big stations so we
     // filter them out here.
-    let configured_stop_ids: HashSet<&str> = config.bvg_stops.iter().map(|s| s.as_str()).collect();
+    let configured_stop_ids: HashSet<&str> = config.bvg_stops.iter().map(String::as_str).collect();
 
     for stop_id in &config.bvg_stops {
         let mut response = api
@@ -92,7 +91,7 @@ pub async fn fetch_departures(
         let entry = departures.entry(stop).or_insert_with(Vec::new);
         for departure in response.departures {
             let display_departure = DisplayDeparture::from_api(&departure, chrono::Utc::now());
-            println!("  {}", display_departure);
+            println!("  {display_departure}");
             entry.push(display_departure);
         }
     }

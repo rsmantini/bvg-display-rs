@@ -26,14 +26,16 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
             |result| match result {
                 Ok(departures) => Message::DeparturesFetched(departures),
                 Err(e) => {
-                    eprintln!("Error fetching departures: {:?}", e);
+                    eprintln!("Error fetching departures: {e:?}");
                     Message::FetchDepartures
                 }
             },
         ),
         Message::DeparturesFetched(departures) => {
             state.ingest(departures);
-            Task::perform(sleep(Duration::from_secs(10)), |_| Message::FetchDepartures)
+            Task::perform(sleep(Duration::from_secs(10)), |()| {
+                Message::FetchDepartures
+            })
         }
         Message::Quit => exit(),
         Message::ToggleUi => {
