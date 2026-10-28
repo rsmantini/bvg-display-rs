@@ -1,8 +1,8 @@
 # BVG stops to display, by their BVG stop id.
-bvg_stops = ["900040101"]
+bvg_stops = ["900100003"]
 
 # Number of departures to be fetched each call
-max_api_results = 10
+max_api_results = 20
 
 # Show departures for how many minutes? 
 max_departure_time_minutes = 30
@@ -11,7 +11,7 @@ max_departure_time_minutes = 30
 assets_dir = "assets"
 
 # Whether the app should start in fullscreen mode.
-fullscreen = true 
+fullscreen = false
 
 show_arriving_trips_only_once = true
 
@@ -24,8 +24,8 @@ ui = "retro"
 [retro_ui]
 # Name of the font (loaded from assets_dir/fonts) used to render departures.
 font = "Advanced Dot Digital-7" 
-font_size = 20
-max_display_rows = 10
+font_size = 30
+max_display_rows = 12
 # Reduce the font of the canceled trip message
 reduce_canceled_text = false
 blink_speed_millis = 700

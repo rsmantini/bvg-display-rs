@@ -11,7 +11,7 @@ pub mod ui;
 use std::error::Error;
 
 use clap::Parser;
-use iced::{Settings, Task, window::Settings as WindowSettings};
+use iced::{Settings, Subscription, Task, window::Settings as WindowSettings};
 
 use crate::{
     assets::Assets,
@@ -23,7 +23,7 @@ use crate::{
 #[derive(Parser)]
 struct Cli {
     /// Path to the config file
-    #[arg(long, default_value = "Config.local.toml")]
+    #[arg(long, default_value = "Config.toml")]
     config: std::path::PathBuf,
 }
 
@@ -38,8 +38,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             fullscreen,
             ..WindowSettings::default()
         })
-        .subscription(escape_subscription)
-        .subscription(blink_tick_subscription)
+        .subscription(subscriptions)
         .settings(settings)
         .run()
         .map_err(Into::into)
@@ -62,4 +61,8 @@ fn init(cli: &Cli) -> Result<(Settings, State), Box<dyn Error>> {
         settings,
         State::new(config, assets.bvg_logo, assets.line_icons),
     ))
+}
+
+fn subscriptions(state: &State) -> Subscription<Message> {
+    Subscription::batch([blink_tick_subscription(state), escape_subscription(state)])
 }
